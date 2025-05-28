@@ -2,14 +2,13 @@ import { NextResponse } from "next/server";
 import User from "@/models/User";
 import dbConnect from "@/lib/db/connection";
 import SessionStartedOrder from "@/models/SessionStartedOrder";
-import fetchFirstDocuments from "@/utils/fetchFirstDocuments/fetchFirst";
+
 import sendToken from "../../utils/sendToken";
 
 export async function POST(request) {
   try {
     await dbConnect();
-    fetchFirstDocuments();
-    
+
     const { name, email, password } = await request.json();
 
     // Basic validation
@@ -34,9 +33,9 @@ export async function POST(request) {
       email,
       password,
     });
-
-    // Optional: Fetch session started orders (like in your login route)
-    const fetchSessionStartedOrdersPromise = SessionStartedOrder.find()
+console.log("New user created:", user);
+    // Optional: Fetch session started orders
+    SessionStartedOrder.find()
       .then((sessionOrders) => {
         console.log(`Found ${sessionOrders.length} session started orders`);
       })
@@ -46,13 +45,13 @@ export async function POST(request) {
 
     // Create and return response with token
     const response = sendToken(user, 201);
-    
+
     // Set CORS headers
-    response.headers.set('Access-Control-Allow-Origin', 'http://localhost:5173');
-    response.headers.set('Access-Control-Allow-Credentials', 'true');
-    response.headers.set('Access-Control-Allow-Methods', 'POST, OPTIONS');
-    response.headers.set('Access-Control-Allow-Headers', 'Content-Type');
-    
+    response.headers.set("Access-Control-Allow-Origin", "http://localhost:5173");
+    response.headers.set("Access-Control-Allow-Credentials", "true");
+    response.headers.set("Access-Control-Allow-Methods", "POST, OPTIONS");
+    response.headers.set("Access-Control-Allow-Headers", "Content-Type");
+
     return response;
   } catch (error) {
     console.error("Registration error:", error);
@@ -60,21 +59,21 @@ export async function POST(request) {
       { error: error?.message || "Internal Server Error" },
       { status: 500 }
     );
-    
+
     // Set CORS headers on error response too
-    errorResponse.headers.set('Access-Control-Allow-Origin', 'http://localhost:5173');
-    errorResponse.headers.set('Access-Control-Allow-Credentials', 'true');
-    
+    errorResponse.headers.set("Access-Control-Allow-Origin", "http://localhost:5173");
+    errorResponse.headers.set("Access-Control-Allow-Credentials", "true");
+
     return errorResponse;
   }
 }
 
-// Add OPTIONS handler for CORS preflight
+// OPTIONS handler for CORS preflight
 export async function OPTIONS() {
   const response = new NextResponse(null, { status: 204 });
-  response.headers.set('Access-Control-Allow-Origin', 'http://localhost:5173');
-  response.headers.set('Access-Control-Allow-Credentials', 'true');
-  response.headers.set('Access-Control-Allow-Methods', 'POST, OPTIONS');
-  response.headers.set('Access-Control-Allow-Headers', 'Content-Type');
+  response.headers.set("Access-Control-Allow-Origin", "http://localhost:5173");
+  response.headers.set("Access-Control-Allow-Credentials", "true");
+  response.headers.set("Access-Control-Allow-Methods", "POST, OPTIONS");
+  response.headers.set("Access-Control-Allow-Headers", "Content-Type");
   return response;
 }

@@ -1,7 +1,8 @@
 import { NextResponse } from "next/server";
 import User from "@/models/User";
 import dbConnect from "@/lib/db/connection";
-import sendToken from "@/utils/sendToken"; // Fixed typo in "utils"
+import sendToken from "../../utils/sendToken";
+
 
 export async function POST(request) {
   try {
@@ -33,6 +34,7 @@ export async function POST(request) {
         { status: 401 }
       );
     }
+    console.log(`User logged in: ${user.name} (${user.email})`);
 
     const response = sendToken(user, 200);
     
