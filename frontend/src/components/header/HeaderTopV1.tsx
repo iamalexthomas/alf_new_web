@@ -17,13 +17,13 @@ const HeaderTopV1 = ({ sectionClass }: DataType) => {
                         <div className="col-lg-7">
                             <ul className="item-flex">
                                 <li>
-                                    <a href="tel:+4733378901">
-                                        <img src={icon10} alt="Icon" /> Phone: +4733378901
+                                    <a href="tel:91 9633332389">
+                                        <img src={icon10} alt="Icon" /> Phone:91 9633332389
                                     </a>
                                 </li>
                                 <li>
-                                    <a href="mailto:name@email.com">
-                                        <img src={icon11} alt="Icon" /> Email: food@restan.com
+                                    <a href="mailto:gm@lifefoods.in">
+                                        <img src={icon11} alt="Icon" /> Email: gm@lifefoods.in
                                     </a>
                                 </li>
                             </ul>

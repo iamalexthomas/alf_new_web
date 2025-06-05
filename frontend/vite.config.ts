@@ -7,4 +7,10 @@ export default defineConfig({
   css: {
     devSourcemap: true
   },
+  server: {
+    allowedHosts: [
+      "fri-agreed-crucial-retailers.trycloudflare.com", // Your Cloudflare Tunnel URL
+      ".trycloudflare.com" // Allow all trycloudflare.com subdomains (optional)
+    ]
+  }
 })

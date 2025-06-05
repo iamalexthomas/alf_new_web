@@ -5,7 +5,7 @@ const ReservationPage = () => {
     return (
         <>
             <LayoutV5 title="Online Reservation" breadCrumb="Reservation">
-                <ReservationV1 sectionClass="default-padding" />
+                {/* <ReservationV1 sectionClass="default-padding" /> */}
             </LayoutV5>
         </>
     );

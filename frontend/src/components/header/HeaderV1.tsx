@@ -39,21 +39,21 @@ const HeaderV1 = () => {
                                     <li className="dropdown">
                                         <Link to="#" className="dropdown-toggle active" data-toggle="dropdown" onClick={toggleSubMenu}>Home</Link>
                                         <ul className="dropdown-menu animated">
-                                            <li><Link to="/">Home Version One</Link></li>
+                                            {/* <li><Link to="/">Home Version One</Link></li>
                                             <li><Link to="/home-2">Home Version Two</Link></li>
                                             <li><Link to="/home-3">Home Version Three</Link></li>
                                             <li><Link to="/home-4">Home Version Four</Link></li>
                                             <li><Link to="/home-5">Home Version Five</Link></li>
-                                            <li><Link to="/home-6">Home Version Six</Link></li>
+                                            <li><Link to="/home-6">Home Version Six</Link></li> */}
                                             <li className="dropdown">
                                                 <Link to="#" className="dropdown-toggle dark" data-toggle="dropdown" onClick={toggleSubMenu}>Dark Version</Link>
                                                 <ul className="dropdown-menu animated">
-                                                    <li><Link to="/home-dark">Home Dark One</Link></li>
+                                                    {/* <li><Link to="/home-dark">Home Dark One</Link></li>
                                                     <li><Link to="/home-2-dark">Home Dark Two</Link></li>
                                                     <li><Link to="/home-3-dark">Home Dark Three</Link></li>
                                                     <li><Link to="/home-4-dark">Home Dark Four</Link></li>
                                                     <li><Link to="/home-5-dark">Home Dark Five</Link></li>
-                                                    <li><Link to="/home-6-dark">Home Dark Six</Link></li>
+                                                    <li><Link to="/home-6-dark">Home Dark Six</Link></li> */}
                                                 </ul>
                                             </li>
                                         </ul>

@@ -4509,12 +4509,14 @@ a.btn-round-animation.dark {
 	bottom: -100%;
 	z-index: -1;
 	transform: translateX(-50%);
+	left: 257px;
 }
 
 .banner-style-four .thumb img:nth-child(2) {
 	position: absolute;
-	left: -5%;
-	top: 10%;
+	left: -10%;
+	top:-15%;
+	    z-index: 117;
 }
 
 .banner-style-four h2 {

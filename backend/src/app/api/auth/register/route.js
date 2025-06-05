@@ -1,9 +1,7 @@
 import { NextResponse } from "next/server";
 import User from "@/models/User";
 import dbConnect from "@/lib/db/connection";
-import SessionStartedOrder from "@/models/SessionStartedOrder";
-
-import sendToken from "../../utils/sendToken";
+import sendToken from "@/utils/sendToken";
 
 export async function POST(request) {
   try {
@@ -11,64 +9,38 @@ export async function POST(request) {
 
     const { name, email, password } = await request.json();
 
-    // Basic validation
+    // Validation
     if (!name || !email || !password) {
       return NextResponse.json(
-        { error: "Please provide all required fields" },
+        { success: false, error: "Please provide all required fields" },
         { status: 400 }
       );
     }
 
-    // Check if user already exists
+    // Check existing user
     const existingUser = await User.findOne({ email });
     if (existingUser) {
       return NextResponse.json(
-        { error: "User already exists with this email" },
+        { success: false, error: "User already exists with this email" },
         { status: 400 }
       );
     }
 
-    const user = await User.create({
-      name,
-      email,
-      password,
-    });
-console.log("New user created:", user);
-    // Optional: Fetch session started orders
-    SessionStartedOrder.find()
-      .then((sessionOrders) => {
-        console.log(`Found ${sessionOrders.length} session started orders`);
-      })
-      .catch((err) => {
-        console.error(`Error fetching session started orders:`, err);
-      });
+    // Create user
+    const user = await User.create({ name, email, password });
 
-    // Create and return response with token
-    const response = sendToken(user, 201);
-
-    // Set CORS headers
-    response.headers.set("Access-Control-Allow-Origin", "http://localhost:5173");
-    response.headers.set("Access-Control-Allow-Credentials", "true");
-    response.headers.set("Access-Control-Allow-Methods", "POST, OPTIONS");
-    response.headers.set("Access-Control-Allow-Headers", "Content-Type");
-
-    return response;
+    // Return token response
+    return sendToken(user, 201);
   } catch (error) {
     console.error("Registration error:", error);
-    const errorResponse = NextResponse.json(
-      { error: error?.message || "Internal Server Error" },
+    return NextResponse.json(
+      { success: false, error: error?.message || "Internal Server Error" },
       { status: 500 }
     );
-
-    // Set CORS headers on error response too
-    errorResponse.headers.set("Access-Control-Allow-Origin", "http://localhost:5173");
-    errorResponse.headers.set("Access-Control-Allow-Credentials", "true");
-
-    return errorResponse;
   }
 }
 
-// OPTIONS handler for CORS preflight
+// CORS preflight
 export async function OPTIONS() {
   const response = new NextResponse(null, { status: 204 });
   response.headers.set("Access-Control-Allow-Origin", "http://localhost:5173");

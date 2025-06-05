@@ -1,9 +1,6 @@
-import { NextResponse } from "next/server";
-
 const sendToken = (user, statusCode) => {
-  const token = user?.getJwtToken();
+  const token = user.getJwtToken();
 
-  // Set cookie options
   const cookieOptions = {
     httpOnly: true,
     secure: process.env.NODE_ENV === "production",
@@ -11,9 +8,7 @@ const sendToken = (user, statusCode) => {
     maxAge: (process.env.COOKIE_EXPIRES_TIME || 7) * 24 * 60 * 60,
     path: "/",
   };
-  //console.log(cookieOptions, "cookieOptions");
 
-  // Create the response
   const response = NextResponse.json(
     {
       success: true,
@@ -27,10 +22,6 @@ const sendToken = (user, statusCode) => {
     { status: statusCode }
   );
 
-  // Set the cookie in the response headers
   response.cookies.set("token", token, cookieOptions);
-
   return response;
 };
-
-export default sendToken;

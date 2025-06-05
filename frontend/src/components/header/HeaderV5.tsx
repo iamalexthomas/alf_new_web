@@ -4,7 +4,7 @@ import useSubMenuToggle from "../../hooks/useSubMenuToggle";
 import HeaderCart from "./HeaderCart";
 import HeaderTopV1 from "./HeaderTopV1";
 import MainMenu from "./MainMenu";
-import logo from "/assets/img/logo.png";
+import logo1 from "/assets/img/logo-1.png";
 import { Link } from "react-router-dom";
 
 const HeaderV5 = () => {
@@ -24,11 +24,11 @@ const HeaderV5 = () => {
                                 <i className="fa fa-bars" />
                             </button>
                             <Link className="navbar-brand" to="/">
-                                <img src={logo} className="logo" alt="Logo" />
+                                <img src={logo1} className="logo" alt="Logo" />
                             </Link>
                         </div>
                         <div className={`collapse navbar-collapse ${isOpen ? "show collapse-mobile" : "collapse-mobile"}`} id="navbar-menu">
-                            <img src={logo} alt="Logo" />
+                            <img src={logo1} alt="Logo" />
                             <button type="button" className="navbar-toggle" data-toggle="collapse" data-target="#navbar-menu" onClick={closeMenu}>
                                 <i className="fa fa-times" />
                             </button>

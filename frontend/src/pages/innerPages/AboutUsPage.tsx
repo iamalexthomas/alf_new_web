@@ -12,7 +12,7 @@ const AboutUsPage = () => {
                 <AboutV1 />
                 <BrandV1 />
                 <FactV1 />
-                <ChefV1 sectionClass="bg-gray" />
+                {/* <ChefV1 sectionClass="bg-gray" /> */}
                 <TestimonialV1 sectionClass="bg-shape" />
             </LayoutV5>
         </>

@@ -4,11 +4,11 @@ const SocialShareV1 = () => {
     return (
         <>
             <li>
-                <Link to="https://www.facebook.com" target="_blank">
-                    <i className="fab fa-facebook-f" />
+                <Link to="https://www.instagram.com/lifexbytes/?next=%2Flovazeinners%2F" target="_blank">
+                    <i className="fab fa-instagram-f" />
                 </Link>
             </li>
-            <li>
+            {/* <li>
                 <Link to="https://dribbble.com" target="_blank">
                     <i className="fab fa-dribbble" />
                 </Link>
@@ -17,7 +17,7 @@ const SocialShareV1 = () => {
                 <Link to="https://www.linkedin.com" target="_blank">
                     <i className="fab fa-linkedin-in" />
                 </Link>
-            </li>
+            </li> */}
         </>
     );
 };
