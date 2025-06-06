@@ -2,7 +2,7 @@ import { useEffect } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { useParams, Link } from "react-router-dom";
 import { RootState } from "../../store/store";
-import { useOrderDetailsQuery } from "../../store/api/orderApi";
+import { useOrderDetailsQuery  } from "../../store/api/orderApi";
 import { toast } from "react-toastify";
 
 const OrderDetailsPage = () => {
@@ -12,7 +12,7 @@ const OrderDetailsPage = () => {
 
   useEffect(() => {
     if (orderId) {
-      dispatch(useOrderDetailsQuery(orderId));
+      dispatch(useOrderDetailsQuery (orderId));
     }
   }, [dispatch, orderId]);
 

@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import User from "@/models/User";
-import sendToken from "@/utils/sendToken";
+import sendToken from "../../utils/sendToken";
 import dbConnect from "@/lib/db/connection";
 
 export async function POST(request) {

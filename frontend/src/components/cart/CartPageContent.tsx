@@ -23,7 +23,110 @@ const CartPageContent = () => {
     dispatch(updateCartItem({ product: id, quantity }));
   };
 
-  // ... rest of your component JSX ...
+  return (
+    <div className="cart-page default-padding overflow-hidden">
+      <div className="container">
+        <div className="row">
+          <div className="col-lg-12">
+            <div className="shop-cart-info">
+              <form className="woocommerce-cart-form">
+                <table className="shop-cart-table">
+                  <thead>
+                    <tr>
+                      <th>Remove</th>
+                      <th>Thumbnail</th>
+                      <th>Product</th>
+                      <th>Price</th>
+                      <th>Quantity</th>
+                      <th>Subtotal</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {cartItems.map((item) => (
+                      <tr key={item.id} className="woocommerce-cart-form">
+                        <td className="product-remove">
+                          <Link
+                            to="#"
+                            className="remove"
+                            onClick={() => handleRemove(item.id)}
+                          >
+                            <i className="fas fa-times" />
+                          </Link>
+                        </td>
+                        <td className="product-thumbnail">
+                          <Link to="#">
+                            <img
+                              src={`/assets/img/shop/${item.thumb}`}
+                              alt={item.title}
+                            />
+                          </Link>
+                        </td>
+                        <td>
+                          <Link to="#">{item.title}</Link>
+                        </td>
+                        <td className="product-price">${item.price}</td>
+                        <td className="product-quantity">
+                          <input
+                            type="number"
+                            value={item.quantity}
+                            title="Qty"
+                            min={1}
+                            step={1}
+                            onChange={(e) =>
+                              handleQuantityChange(item.id, Number(e.target.value))
+                            }
+                          />
+                        </td>
+                        <td className="product-subtotal">
+                          ${(item.price * item.quantity).toFixed(2)}
+                        </td>
+                      </tr>
+                    ))}
+                    <tr>
+                      <td colSpan={6} className="actions">
+                        <div className="coupon">
+                          <input type="text" placeholder="Coupon code" />
+                          <button type="submit">Apply coupon</button>
+                        </div>
+                        <Link to="/checkout">Checkout</Link>
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </form>
+            </div>
+            <div className="shop-cart-totals mt-50">
+              <h2>Cart totals</h2>
+              <div className="table-responsive table-bordered">
+                <table className="table">
+                  <thead>
+                    <tr>
+                      <th scope="col">Subtotal</th>
+                      <th scope="col">${subtotal.toFixed(2)}</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <th scope="row">Shipping</th>
+                      <td>
+                        <p>Free shipping</p>
+                        <p>Shipping to Australia.</p>
+                        <Link to="#">Change address</Link>
+                      </td>
+                    </tr>
+                    <tr>
+                      <th scope="row">Total</th>
+                      <td>${subtotal.toFixed(2)}</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
 };
 
 export default CartPageContent;

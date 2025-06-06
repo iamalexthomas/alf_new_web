@@ -1,79 +1,28 @@
+
+// src/lib/db/connection.ts
 import mongoose from "mongoose";
-import User from "@/models/User";
-import SessionStartedOrder from "@/models/SessionStartedOrder";
-import Order from "@/models/Order";
-import ShipRocketToken from "@/models/ShipRocketToken";
-import products from "@/models/Products";
-const MONGODB_URI =
-  process.env.NODE_ENV === "development"
-    ? process.env.MONGODB_URI
-    : process.env.MONGODBLIVE_URI;
+
+const MONGODB_URI = process.env.MONGODB_URI || "mongodb+srv://alfinreji10:<password>@expense-tracker.ei7p0d7.mongodb.net/lyfbytes?retryWrites=true&w=majority&appName=lyfbytes";
 
 if (!MONGODB_URI) {
-  throw new Error(
-    "Please define the MONGODB_URI environment variable inside .env.local"
-  );
+  throw new Error("Please define MONGODB_URI in .env");
 }
 
-// Initialize cached connection in global scope
-let cached = global.mongoose || { conn: null, promise: null };
-if (!global.mongoose) {
-  global.mongoose = cached;
-}
+let isConnected = false;
 
-async function dbConnect() {
-  // Return cached connection if available
-  if (cached.conn) {
-    console.log("Using cached MongoDB connection");
-    return cached.conn;
-  }
-
-  // If no promise exists, create one
-  if (!cached.promise) {
-    const opts = {
-      // useNewUrlParser and useUnifiedTopology are deprecated but included for compatibility
-      useNewUrlParser: true,
-      useUnifiedTopology: true,
-      serverSelectionTimeoutMS: 5000, // Fail fast if server isn’t found (5s)
-      connectTimeoutMS: 15000, // Max time to establish connection (10s)
-    };
-
-    console.log(
-      "Attempting to connect to MongoDB with URI:",
-      MONGODB_URI.replace(/:([^:@]+)@/, ":****@")
-    ); // Mask password
-
-    cached.promise = mongoose
-      .connect(MONGODB_URI, opts)
-      .then((mongoose) => {
-        console.log("MongoDB connected successfully");
-        return mongoose;
-      })
-      .catch((error) => {
-        console.error("MongoDB connection failed:", error.message);
-        cached.promise = null; // Reset promise to allow retry
-        throw error;
-      });
-
-    // Connection event listeners
-    mongoose.connection.on("connected", () =>
-      console.log("Mongoose connection established")
-    );
-    mongoose.connection.on("error", (err) =>
-      console.error("Mongoose connection error:", err)
-    );
-    mongoose.connection.on("disconnected", () =>
-      console.log("Mongoose disconnected")
-    );
+export default async function dbConnect() {
+  if (isConnected) {
+    console.log("Using existing MongoDB connection");
+    return;
   }
 
   try {
-    cached.conn = await cached.promise;
-    return cached.conn;
+    console.log("Attempting to connect to MongoDB with URI:", MONGODB_URI.replace(/:.*@/, ":****@"));
+    await mongoose.connect(MONGODB_URI);
+    isConnected = true;
+    console.log("MongoDB connected successfully");
   } catch (error) {
-    console.error("Error in dbConnect:", error.message);
+    console.error("MongoDB connection error:", error);
     throw error;
   }
 }
-
-export default dbConnect;

@@ -1,62 +1,52 @@
-
-// src/store/features/userSlice.tsx
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 
 interface User {
-  _id: string;
+  id: string;
   name: string;
   email: string;
-  token: string;
 }
 
 interface UserState {
   user: User | null;
+  token: string;
   isAuthenticated: boolean;
   loading: boolean;
 }
-const loadInitialState = (): UserState => {
-  if (typeof window !== "undefined") {
-    const storedUser = localStorage.getItem("user");
-    return {
-      user: storedUser ? JSON.parse(storedUser) : null,
-      isAuthenticated: !!storedUser,
-      loading: false,
-    };
-  }
-  return { user: null, isAuthenticated: false, loading: false };
+
+const initialState: UserState = {
+  user: null,
+  token: "",
+  isAuthenticated: false,
+  loading: false,
 };
 
-const initialState: UserState = loadInitialState();
-
-export const userSlice = createSlice({
+const userSlice = createSlice({
   name: "user",
   initialState,
   reducers: {
-    setUser: (state, action: PayloadAction<User>) => {
-      state.user = action.payload;
-      state.isAuthenticated = true;
-      state.loading = false;
-      if (typeof window !== "undefined") {
-        localStorage.setItem("user", JSON.stringify(action.payload));
-      }
+    setUser(state, action: PayloadAction<User>) {
+      state.user = {
+        id: action.payload.id,
+        name: action.payload.name || "",
+        email: action.payload.email || "",
+      };
     },
-    setIsAuthenticated: (state, action: PayloadAction<boolean>) => {
+    setToken(state, action: PayloadAction<string>) {
+      state.token = action.payload;
+    },
+    setIsAuthenticated(state, action: PayloadAction<boolean>) {
       state.isAuthenticated = action.payload;
     },
-    setLoading: (state, action: PayloadAction<boolean>) => {
+    setLoading(state, action: PayloadAction<boolean>) {
       state.loading = action.payload;
     },
-    clearUser: (state) => {
+    clearUser(state) {
       state.user = null;
+      state.token = "";
       state.isAuthenticated = false;
-      state.loading = false;
-      if (typeof window !== "undefined") {
-        localStorage.removeItem("user");
-      }
     },
   },
 });
 
+export const { setUser, setToken, setIsAuthenticated, setLoading, clearUser } = userSlice.actions;
 export default userSlice.reducer;
-
-export const { setUser, setIsAuthenticated, setLoading, clearUser } = userSlice.actions;

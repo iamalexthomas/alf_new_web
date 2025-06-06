@@ -17,6 +17,7 @@ interface HeaderSearchProps {
   toggleSubMenu?: (event: React.MouseEvent<HTMLAnchorElement>) => void;
 }
 
+
 interface FormEventHandler {
   (event: React.FormEvent<HTMLFormElement>): void;
 }
@@ -69,33 +70,36 @@ const SidebarInfo: React.FC<HeaderSearchProps> = ({ closeInfoBar, isInfoOpen, to
   const [password, setPassword] = useState("");
 
   const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
+  e.preventDefault();
+  
+  try {
+    const response = await login({ email, password }).unwrap();
     
-    try {
-      const response = await login({ email, password }).unwrap();
+    // Handle current backend response structure
+    if (response.token) {
+      dispatch(setUser({
+        id: response._id,  // Using _id from root
+        name: response.name,
+        email: response.email,
+        token: response.token
+      }));
       
-      if (response.success) {
-        dispatch(setUser({
-          _id: response.user.id,
-          name: response.user.name,
-          email: response.user.email,
-          token: response.token
-        }));
-        dispatch(setIsAuthenticated(true));
-        toast.success("Login Successful");
-        setShowLoginModal(false);
+      dispatch(setIsAuthenticated(true));
+      toast.success("Login Successful");
+      setShowLoginModal(false);
+      
+      // Force a state update if needed
+      setTimeout(() => {
         navigate("/my-account");
-      } else {
-        toast.error(response.error || "Login failed");
-      }
-    } catch (error: any) {
-      console.error("Login error:", error);
-      const errorMessage = error.data?.error || 
-                         error.data?.message || 
-                         "Login failed. Please try again.";
-      toast.error(errorMessage);
+      }, 0);
+    } else {
+      toast.error("Login failed - invalid response");
     }
-  };
+  } catch (error: any) {
+    console.error("Login error:", error);
+    toast.error(error.data?.message || "Login failed");
+  }
+};
     return (
       <div className="modal fade show" style={{ display: "block" }} aria-modal="true" role="dialog">
         <div className="modal-dialog modal-dialog-centered">
@@ -202,12 +206,19 @@ const SidebarInfo: React.FC<HeaderSearchProps> = ({ closeInfoBar, isInfoOpen, to
       }
 
       try {
-        const { data } = await register({
+        const  response = await register({
           name: formData.name,
           email: formData.email,
           password: formData.password,
         }).unwrap();
-        dispatch(setUser({ _id: data._id, token: data.token }));
+        dispatch(setUser({
+        // id: response._id,  // Using _id from root
+        name: response.name,
+        email: response.email,
+       password:response.password,
+        token: response.token
+      }));
+      
         toast.success("Registration successful!");
         setShowRegisterModal(false);
         navigate("/my-account");

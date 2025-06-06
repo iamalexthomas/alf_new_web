@@ -6,7 +6,7 @@ import { setUser, setIsAuthenticated } from "@/store/features/userSlice"; // Use
 
 export const authApi = createApi({
   reducerPath: "authApi",
-  baseQuery: fetchBaseQuery({ baseUrl: "/api/" }),
+  baseQuery: fetchBaseQuery({ baseUrl: "http://localhost:3000/api/" }),
   endpoints: (builder) => ({
     register: builder.mutation({
       query(body) {

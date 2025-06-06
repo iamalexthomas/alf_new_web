@@ -1,24 +1,29 @@
+
+// src/app/api/auth/me/route.ts
 import dbConnect from "@/lib/db/connection";
 import { isAuthenticatedUser } from "@/middlewares/auth";
 import { NextResponse } from "next/server";
-import SessionStartedOrder from "@/models/SessionStartedOrder";
-import Order from "@/models/Order";
-import ShipRocketToken from "@/models/ShipRocketToken";
-import fetchFirstDocuments from "../../utils/fetchFirstDocuments/fetchFirst";
 import User from "@/models/User";
-import Product from "@/models/Products";
 
 export async function GET(req) {
   try {
     await dbConnect();
-    //fetchFirstDocuments();
+    console.log("GET /api/auth/me requested");
+
     const user = await isAuthenticatedUser(req);
-    return NextResponse.json({ success: true, user }, { status: 200 });
-  } catch (error) {
-    const statusCode = 401;
     return NextResponse.json(
-      { success: false, message: error.message },
-      { status: statusCode }
+      { success: true, data: { _id: user._id, name: user.name || "", email: user.email } },
+      { status: 200 }
+    );
+  } catch (error) {
+    console.error("getMe error:", {
+      message: error.message,
+      stack: error.stack,
+      name: error.name,
+    });
+    return NextResponse.json(
+      { success: false, message: error.message || "Internal Server Error" },
+      { status: 401 }
     );
   }
 }

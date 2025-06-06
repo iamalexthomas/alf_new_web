@@ -1,44 +1,64 @@
 import { useState } from "react";
-import { toast } from "react-toastify";
 import { Link, useNavigate } from "react-router-dom";
 import { useDispatch } from "react-redux";
 import { useLoginMutation } from "../../store/api/authApi";
 import { setUser, setIsAuthenticated } from "../../store/features/userSlice";
+import Swal from "sweetalert2";
 
 const LoginContent = () => {
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
+  const [formData, setFormData] = useState({
+    email: "",
+    password: "",
+  });
   const [isLoading, setIsLoading] = useState(false);
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const [login] = useLoginMutation();
 
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setFormData({ ...formData, [e.target.name]: e.target.value });
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    const { email, password } = formData;
     setIsLoading(true);
 
     try {
       const response = await login({ email, password }).unwrap();
-      
+
       if (response.success) {
         dispatch(setUser({
           _id: response.user.id,
-          name: response.user.name,
-          email: response.user.email,
-          token: response.token
+          name: response.user.name || "",
+          email: response.user.email || "",
+          token: response.token || "",
         }));
         dispatch(setIsAuthenticated(true));
-        toast.success("Login Successful");
+        Swal.fire({
+          icon: "success",
+          title: "Login Successful",
+          text: "You have successfully logged in!",
+          confirmButtonColor: "#3085d6",
+        });
         navigate("/my-account");
       } else {
-        toast.error(response.error || "Login failed");
+        Swal.fire({
+          icon: "error",
+          title: "Login Failed",
+          text: response.error || response.message || "Login failed. Please try again.",
+          confirmButtonColor: "#d33",
+        });
       }
     } catch (error: any) {
       console.error("Login error:", error);
-      const errorMessage = error.data?.error || 
-                         error.data?.message || 
-                         "Login failed. Please try again.";
-      toast.error(errorMessage);
+      const errorMessage = error.data?.error || error.data?.message || "Login failed. Please try again.";
+      Swal.fire({
+        icon: "error",
+        title: "Login Failed",
+        text: errorMessage,
+        confirmButtonColor: "#d33",
+      });
     } finally {
       setIsLoading(false);
     }
@@ -58,8 +78,9 @@ const LoginContent = () => {
                       className="form-control"
                       placeholder="Email*"
                       type="email"
-                      value={email}
-                      onChange={(e) => setEmail(e.target.value)}
+                      name="email"
+                      value={formData.email}
+                      onChange={handleChange}
                       required
                     />
                   </div>
@@ -68,8 +89,9 @@ const LoginContent = () => {
                       className="form-control"
                       placeholder="Password*"
                       type="password"
-                      value={password}
-                      onChange={(e) => setPassword(e.target.value)}
+                      name="password"
+                      value={formData.password}
+                      onChange={handleChange}
                       required
                     />
                   </div>
