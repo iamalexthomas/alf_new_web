@@ -1,12 +1,13 @@
-import ShopSingleTab from "./ShopSingleTab";
-import RelatedProducts from "../product/RelatedProducts";
+// src/components/ShopSingleThumbContent.tsx
 import { Link } from "react-router-dom";
-import RatingsStar from "../utilities/RatingsStar";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../../store/store";
+import { addToCart, CartItem } from "../../store/features/cartSlice"; // Import CartItem
 import { toast } from "react-toastify";
-import { addToCart } from "../../store/features/cartSlice";
 import { useState } from "react";
+import ShopSingleTab from "./ShopSingleTab";
+import RelatedProducts from "../product/RelatedProducts";
+import RatingsStar from "../utilities/RatingsStar";
 
 interface DataType {
   id?: number;
@@ -23,23 +24,29 @@ interface DataType {
 const ShopSingleThumbContent = ({ productInfo }: { productInfo: DataType }) => {
   const { thumb, name, reviews, ratings, oldPrice, price, tags } = productInfo;
   const dispatch = useDispatch();
-  const cartItems = useSelector((state: RootState) => state.cart.items);
+  const cartItems = useSelector((state: RootState) => state.cart?.cartItems ?? []); // Fix: Use cartItems, not items
   const [quantity, setQuantity] = useState(1);
 
   const handleAddToCart = () => {
-    const alreadyInCart = cartItems.some((item) => item.id === productInfo.id);
+    // Ensure productInfo has required properties
+    if (!productInfo.id || !productInfo.name || !productInfo.thumb || !productInfo.price) {
+      toast.error("Invalid product data");
+      return;
+    }
+
+    const alreadyInCart = cartItems.some((item) => item.product === String(productInfo.id));
 
     if (alreadyInCart) {
       toast.warning("Product already in cart");
     } else {
       dispatch(
         addToCart({
-          id: productInfo.id!,
-          title: productInfo.name!,
-          price: parseFloat(productInfo.price!.replace("$", "")),
-          thumb: productInfo.thumb!,
+          product: String(productInfo.id), // Convert id to string for cartSlice
+          name: productInfo.name,
+          image: productInfo.thumb,
+          price: parseFloat(productInfo.price.replace("$", "")),
           quantity,
-        })
+        } as CartItem)
       );
       toast.success("Product added successfully");
     }
@@ -55,8 +62,8 @@ const ShopSingleThumbContent = ({ productInfo }: { productInfo: DataType }) => {
                 <div className="item-box">
                   <div className="product-item">
                     <img
-                      src={`/assets/img/shop/${thumb}`}
-                      alt="Thumb"
+                      src={thumb ? `/assets/img/shop/${thumb}` : "/assets/img/shop/placeholder.jpg"}
+                      alt={name || "Product"}
                       width={450}
                       height={450}
                     />
@@ -93,7 +100,7 @@ const ShopSingleThumbContent = ({ productInfo }: { productInfo: DataType }) => {
                   <span>In Stock</span>
                 </div>
                 <p>
-                  The Aspire 5 is a compact laptop in a thin case with a metal cover, a high-quality Full HD IPS display and a rich set of interfaces. Thanks to its powerful components, the laptop can handle resource-intensive tasks perfectly and is also suitable for most games. non-characteristic words etc. Susp endisse ultricies nisi vel quam suscipit. Sabertooth peacock flounder
+                  The Aspire 5 is a compact laptop in a thin case with a metal cover, a high-quality Full HD IPS display and a rich set of interfaces. Thanks to its powerful components, the laptop can handle resource-intensive tasks perfectly and is also suitable for most games. non-characteristic words etc. Suspendisse ultricies nisi vel quam suscipit. Sabertooth peacock flounder
                 </p>
                 <div className="product-purchase-list">
                   <input
@@ -105,15 +112,16 @@ const ShopSingleThumbContent = ({ productInfo }: { productInfo: DataType }) => {
                     value={quantity}
                     onChange={(e) => setQuantity(Number(e.target.value))}
                     placeholder="0"
+                    aria-label="Quantity"
                   />
-                  <Link
-                    to="#"
+                  <button
+                    type="button" // Change from Link to button for proper semantics
                     className="btn secondary btn-theme btn-sm animation"
                     onClick={handleAddToCart}
                   >
                     <i className="fas fa-shopping-cart" />
                     Add to cart
-                  </Link>
+                  </button>
                   <div className="shop-action">
                     <ul>
                       <li className="wishlist">
@@ -129,7 +137,7 @@ const ShopSingleThumbContent = ({ productInfo }: { productInfo: DataType }) => {
                     </ul>
                   </div>
                 </div>
-                <div className="product-estimate-delivary">
+                <div className="product-estimate-delivery">
                   <i className="fas fa-box-open" />
                   <strong> 2-day Delivery</strong>
                   <span>Speedy and reliable parcel delivery!</span>
@@ -140,7 +148,7 @@ const ShopSingleThumbContent = ({ productInfo }: { productInfo: DataType }) => {
                   </span>
                   <span className="posted-in">
                     <strong>Category:</strong>
-                    <Link to="#">Computer</Link> ,
+                    <Link to="#">Computer</Link>,
                     <Link to="#">Speaker</Link>,
                     <Link to="#">Headphone</Link>
                   </span>

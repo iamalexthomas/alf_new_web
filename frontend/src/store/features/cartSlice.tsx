@@ -2,7 +2,7 @@
 "use client";
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 
-interface CartItem {
+export interface CartItem {
   product: string;
   name: string;
   image: string;
@@ -55,29 +55,21 @@ export const cartSlice = createSlice({
       const isItemExist = state.cartItems.find((i) => i.product === item.product);
 
       if (isItemExist) {
-        // Update quantity if item exists
         state.cartItems = state.cartItems.map((i) =>
           i.product === item.product
             ? { ...i, quantity: i.quantity + item.quantity }
             : i
         );
       } else {
-        // Add new item
         state.cartItems.push(item);
       }
       saveToLocalStorage("cartItems", state.cartItems);
     },
-    updateCartItem: (state, action: PayloadAction<CartItem>) => {
-      const item = action.payload;
-      const isItemExist = state.cartItems.find((i) => i.product === item.product);
-
-      if (isItemExist) {
-        state.cartItems = state.cartItems.map((i) =>
-          i.product === isItemExist.product ? { ...i, ...item } : i
-        );
-      } else {
-        state.cartItems.push(item);
-      }
+    updateCartItem: (state, action: PayloadAction<{ product: string; quantity: number }>) => {
+      const { product, quantity } = action.payload;
+      state.cartItems = state.cartItems.map((i) =>
+        i.product === product ? { ...i, quantity } : i
+      );
       saveToLocalStorage("cartItems", state.cartItems);
     },
     setCartItem: (state, action: PayloadAction<CartItem>) => {
@@ -218,7 +210,7 @@ export const cartSlice = createSlice({
 export default cartSlice.reducer;
 
 export const {
-  addToCart, // Added new action
+  addToCart,
   setCartItem,
   removeCartItem,
   saveShippingInfo,

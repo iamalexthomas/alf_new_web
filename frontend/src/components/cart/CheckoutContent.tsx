@@ -1,7 +1,9 @@
-/* eslint-disable no-unused-vars */
+// src/components/CheckoutContent.tsx
+"use client"; // Required for Next.js client-side features
 
-import { useSelector } from "react-redux";
+import { useSelector, useDispatch } from "react-redux";
 import { RootState } from "../../store/store";
+import { CartItem, saveShippingInfo } from "../../store/features/cartSlice"; // Import CartItem and saveShippingInfo
 import CustomSelect from "../select/CustomSelect";
 
 interface FormEventHandler {
@@ -9,11 +11,13 @@ interface FormEventHandler {
 }
 
 const CheckoutContent = () => {
-  const handleForm: FormEventHandler = (event) => {
-    event.preventDefault();
-    const form = event.target as HTMLFormElement;
-    form.reset();
-  };
+  const dispatch = useDispatch();
+  const cartItems = useSelector((state: RootState) => state.cart?.cartItems ?? []); // Use cartItems, not items
+
+  const subtotal = cartItems.reduce(
+    (total, item) => total + (item.price || 0) * (item.quantity || 0),
+    0
+  );
 
   const persons = [
     { value: "1", label: "Australia" },
@@ -23,11 +27,26 @@ const CheckoutContent = () => {
     { value: "5", label: "Bangladesh" },
   ];
 
-  const cartItems = useSelector((state: RootState) => state.cart.items);
-  const subtotal = cartItems.reduce(
-    (total, item) => total + (item.price || 0) * (item.quantity || 0),
-    0
-  );
+  const handleForm: FormEventHandler = (event) => {
+    event.preventDefault();
+    const form = event.target as HTMLFormElement;
+    const formData = new FormData(form);
+    const shippingInfo = {
+      firstName: formData.get("f-name") as string,
+      lastName: formData.get("l-name") as string,
+      country: formData.get("select") as string,
+      streetAddress: formData.get("st-address") as string,
+      streetAddress2: formData.get("st-address2") as string,
+      city: formData.get("t-city") as string,
+      state: formData.get("st-country") as string,
+      postcode: formData.get("postcode") as string,
+      phone: formData.get("phone") as string,
+      email: formData.get("email") as string,
+      comments: formData.get("comments") as string,
+    };
+    dispatch(saveShippingInfo(shippingInfo));
+    form.reset();
+  };
 
   return (
     <div className="checkout-area default-padding">
@@ -37,7 +56,7 @@ const CheckoutContent = () => {
             <form className="checkout-form" onSubmit={handleForm}>
               <div className="row">
                 <div className="col-lg-6">
-                  <h3>Billing details</h3>
+                  <h3>Billing Details</h3>
                   <div className="row">
                     <div className="col-lg-6">
                       <div className="form-group">
@@ -47,7 +66,7 @@ const CheckoutContent = () => {
                           id="f-name"
                           name="f-name"
                           type="text"
-                          autoComplete="off"
+                          autoComplete="given-name"
                           required
                         />
                       </div>
@@ -60,7 +79,7 @@ const CheckoutContent = () => {
                           id="l-name"
                           name="l-name"
                           type="text"
-                          autoComplete="off"
+                          autoComplete="family-name"
                           required
                         />
                       </div>
@@ -70,7 +89,7 @@ const CheckoutContent = () => {
                     <div className="col-lg-12">
                       <div className="form-group">
                         <label htmlFor="select">Country / Region *</label>
-                        <CustomSelect options={persons} selectValue={2} />
+                        <CustomSelect options={persons} selectValue="2" />
                       </div>
                     </div>
                   </div>
@@ -84,15 +103,16 @@ const CheckoutContent = () => {
                           name="st-address"
                           type="text"
                           placeholder="House number and street name"
-                          autoComplete="off"
+                          autoComplete="street-address"
                           required
                         />
                         <input
-                          className="form-control"
+                          className="form-control mt-2"
                           id="st-address2"
                           name="st-address2"
                           type="text"
                           placeholder="Apartment, suite, unit, etc. (optional)"
+                          autoComplete="address-line2"
                         />
                       </div>
                     </div>
@@ -106,7 +126,7 @@ const CheckoutContent = () => {
                           id="t-city"
                           name="t-city"
                           type="text"
-                          autoComplete="off"
+                          autoComplete="address-level2"
                           required
                         />
                       </div>
@@ -121,7 +141,7 @@ const CheckoutContent = () => {
                           id="st-country"
                           name="st-country"
                           type="text"
-                          autoComplete="off"
+                          autoComplete="address-level1"
                           required
                         />
                       </div>
@@ -136,7 +156,7 @@ const CheckoutContent = () => {
                           id="postcode"
                           name="postcode"
                           type="text"
-                          autoComplete="off"
+                          autoComplete="postal-code"
                           required
                         />
                       </div>
@@ -150,8 +170,8 @@ const CheckoutContent = () => {
                           className="form-control"
                           id="phone"
                           name="phone"
-                          type="text"
-                          autoComplete="off"
+                          type="tel"
+                          autoComplete="tel"
                         />
                       </div>
                     </div>
@@ -165,33 +185,32 @@ const CheckoutContent = () => {
                           id="email"
                           name="email"
                           type="email"
-                          autoComplete="off"
+                          autoComplete="email"
                           required
+                        />
+                      </div>
+                    </div>
+                  </div>
+                  <div className="row">
+                    <div className="col-lg-12">
+                      <div className="form-group comments">
+                        <label htmlFor="comments">Order Notes (Optional)</label>
+                        <textarea
+                          className="form-control"
+                          id="comments"
+                          name="comments"
+                          placeholder="Notes about your order, e.g. special notes for delivery."
+                          autoComplete="off"
                         />
                       </div>
                     </div>
                   </div>
                 </div>
                 <div className="col-lg-6">
-                  <h3>Order notes (optional)</h3>
-                  <div className="form-group comments">
-                    <label htmlFor="comments">Order Notes (Option)</label>
-                    <textarea
-                      className="form-control"
-                      id="comments"
-                      name="comments"
-                      placeholder="Notes about your order, e.g. special notes for delivery."
-                      autoComplete="off"
-                    />
-                  </div>
-                </div>
-              </div>
-              <div className="row">
-                <div className="col-lg-12">
                   <div className="shop-cart-totals mt-50 mt-md-30 mt-xs-10">
-                    <h2>Your order</h2>
+                    <h2>Your Order</h2>
                     <div className="table-responsive table-bordered">
-                      <table className="table">
+                      <table className="table" aria-label="Order Summary">
                         <thead>
                           <tr>
                             <th scope="col">Product</th>
@@ -199,14 +218,20 @@ const CheckoutContent = () => {
                           </tr>
                         </thead>
                         <tbody>
-                          {cartItems.map((item) => (
-                            <tr key={item.id}>
-                              <th>
-                                {item.title} × {item.quantity}
-                              </th>
-                              <td>${((item.price || 0) * (item.quantity || 0)).toFixed(2)}</td>
+                          {cartItems.length === 0 ? (
+                            <tr>
+                              <td colSpan={2}>Your cart is empty</td>
                             </tr>
-                          ))}
+                          ) : (
+                            cartItems.map((item: CartItem) => (
+                              <tr key={item.product}>
+                                <td>
+                                  {item.name} × {item.quantity}
+                                </td>
+                                <td>${(item.price * item.quantity).toFixed(2)}</td>
+                              </tr>
+                            ))
+                          )}
                           <tr>
                             <th scope="row">Shipping</th>
                             <td>Free Shipping</td>
@@ -219,10 +244,6 @@ const CheckoutContent = () => {
                       </table>
                     </div>
                   </div>
-                </div>
-              </div>
-              <div className="row">
-                <div className="col-lg-12">
                   <p className="woocommerce-info">
                     Sorry, it seems that there are no available payment methods. Please contact us if
                     you require assistance or wish to make alternate arrangements.
