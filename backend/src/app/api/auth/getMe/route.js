@@ -1,5 +1,5 @@
 
-// src/app/api/auth/me/route.ts
+// src/app/api/auth/getMe/route.js
 import dbConnect from "@/lib/db/connection";
 import { isAuthenticatedUser } from "@/middlewares/auth";
 import { NextResponse } from "next/server";
@@ -8,7 +8,7 @@ import User from "@/models/User";
 export async function GET(req) {
   try {
     await dbConnect();
-    console.log("GET /api/auth/me requested");
+    console.log("GET /api/auth/getMe requested");
 
     const user = await isAuthenticatedUser(req);
     return NextResponse.json(

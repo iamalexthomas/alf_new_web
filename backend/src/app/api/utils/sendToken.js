@@ -1,5 +1,5 @@
 
-// src/utils/sendToken.ts
+// src/utils/sendToken.js
 import { NextResponse } from "next/server";
 import jwt from "jsonwebtoken";
 

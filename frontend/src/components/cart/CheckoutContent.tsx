@@ -1,10 +1,13 @@
 // src/components/CheckoutContent.tsx
 "use client"; // Required for Next.js client-side features
 
+import { useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { RootState } from "../../store/store";
 import { CartItem, saveShippingInfo } from "../../store/features/cartSlice"; // Import CartItem and saveShippingInfo
 import CustomSelect from "../select/CustomSelect";
+import PaymentModal from "../modal/PaymentModal";
+import { toast } from "react-toastify";
 
 interface FormEventHandler {
   (event: React.FormEvent<HTMLFormElement>): void;
@@ -13,6 +16,8 @@ interface FormEventHandler {
 const CheckoutContent = () => {
   const dispatch = useDispatch();
   const cartItems = useSelector((state: RootState) => state.cart?.cartItems ?? []); // Use cartItems, not items
+  const [showPaymentModal, setShowPaymentModal] = useState(false);
+  const [isFormValid, setIsFormValid] = useState(false);
 
   const subtotal = cartItems.reduce(
     (total, item) => total + (item.price || 0) * (item.quantity || 0),
@@ -26,7 +31,6 @@ const CheckoutContent = () => {
     { value: "4", label: "Japan" },
     { value: "5", label: "Bangladesh" },
   ];
-
   const handleForm: FormEventHandler = (event) => {
     event.preventDefault();
     const form = event.target as HTMLFormElement;
@@ -44,8 +48,36 @@ const CheckoutContent = () => {
       email: formData.get("email") as string,
       comments: formData.get("comments") as string,
     };
+    
+    // Validate required fields
+    if (!shippingInfo.firstName || !shippingInfo.lastName || !shippingInfo.streetAddress || 
+        !shippingInfo.city || !shippingInfo.state || !shippingInfo.postcode || !shippingInfo.email) {
+      toast.error("Please fill in all required fields");
+      return;
+    }
+
+    if (cartItems.length === 0) {
+      toast.error("Your cart is empty");
+      return;
+    }
+
     dispatch(saveShippingInfo(shippingInfo));
-    form.reset();
+    setIsFormValid(true);
+    setShowPaymentModal(true);
+  };
+
+  const handleConfirmOrder = (paymentMethod: string) => {
+    // Here you would typically integrate with your payment processing
+    console.log("Order confirmed with payment method:", paymentMethod);
+    
+    // For demonstration, we'll just show different messages based on payment method
+    if (paymentMethod !== "cod") {
+      toast.info(`Redirecting to ${paymentMethod} payment gateway...`);
+      // In a real app, you'd redirect to payment processor here
+    }
+    
+    // Reset form after successful order
+    setIsFormValid(false);
   };
 
   return (
@@ -243,10 +275,8 @@ const CheckoutContent = () => {
                         </tbody>
                       </table>
                     </div>
-                  </div>
-                  <p className="woocommerce-info">
-                    Sorry, it seems that there are no available payment methods. Please contact us if
-                    you require assistance or wish to make alternate arrangements.
+                  </div>                  <p className="woocommerce-info">
+                    Complete your order by selecting a payment method below.
                   </p>
                   <button type="submit" name="submit" id="submit">
                     Place Order
@@ -257,6 +287,14 @@ const CheckoutContent = () => {
           </div>
         </div>
       </div>
+      
+      {/* Payment Modal */}
+      <PaymentModal
+        isOpen={showPaymentModal}
+        onClose={() => setShowPaymentModal(false)}
+        orderTotal={subtotal}
+        onConfirmOrder={handleConfirmOrder}
+      />
     </div>
   );
 };

@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import dbConnect from "@/lib/db/connection";
 import User from "@/models/User";
-import sendToken from "@/utils/sendToken";
+import sendToken from "@/app/api/utils/sendToken";
 import SessionStartedOrder from "@/models/SessionStartedOrder";
 import Order from "@/models/Order";
 import fetchFirstDocuments from "../../utils/fetchFirstDocuments/fetchFirst";

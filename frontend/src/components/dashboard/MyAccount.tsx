@@ -11,8 +11,8 @@ export default function MyAccount() {
   useEffect(() => {
     // Only run this effect once when component mounts
     if (!initialCheckComplete) {
-      if (isAuthenticated ===true) {
-        navigate("/");
+      if (isAuthenticated === false) { // Changed: redirect when NOT authenticated
+        navigate("/"); // Or navigate to "/login" if you have a login page
       }
       setInitialCheckComplete(true);
     }

@@ -1,12 +1,18 @@
-
-// src/store/api/authApi.tsx
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 import { userApi } from "./userApi"; // Assuming userApi is in the same directory
-import { setUser, setIsAuthenticated } from "@/store/features/userSlice"; // Use @ alias
+import { setUser, setIsAuthenticated, clearUser } from "../features/userSlice"; // Use @ alias
 
 export const authApi = createApi({
   reducerPath: "authApi",
-  baseQuery: fetchBaseQuery({ baseUrl: "http://localhost:3000/api/" }),
+  baseQuery: fetchBaseQuery({ 
+    baseUrl: "http://localhost:3000/api/",
+    credentials: 'include', // This ensures cookies are sent with requests
+    prepareHeaders: (headers, { getState }) => {
+      // Set content type for JSON requests
+      headers.set('Content-Type', 'application/json');
+      return headers;
+    },
+  }),
   endpoints: (builder) => ({
     register: builder.mutation({
       query(body) {
@@ -19,7 +25,8 @@ export const authApi = createApi({
       async onQueryStarted(args, { dispatch, queryFulfilled }) {
         try {
           await queryFulfilled;
-          await dispatch(userApi.endpoints.getMe.initiate(null));
+          // Use the correct endpoint path - change 'me' to 'getme' if your route is at /api/auth/getme
+          await dispatch(userApi.endpoints.getMe.initiate());
         } catch (error) {
           console.log(error);
         }
@@ -36,7 +43,7 @@ export const authApi = createApi({
       async onQueryStarted(args, { dispatch, queryFulfilled }) {
         try {
           await queryFulfilled;
-          await dispatch(userApi.endpoints.getMe.initiate(null));
+          await dispatch(userApi.endpoints.getMe.initiate());
         } catch (error) {
           console.log(error);
         }
@@ -53,7 +60,7 @@ export const authApi = createApi({
       async onQueryStarted(args, { dispatch, queryFulfilled }) {
         try {
           await queryFulfilled;
-          await dispatch(userApi.endpoints.getMe.initiate(null));
+          await dispatch(userApi.endpoints.getMe.initiate());
         } catch (error) {
           console.log(error);
         }
@@ -67,7 +74,9 @@ export const authApi = createApi({
       async onQueryStarted(args, { dispatch, queryFulfilled }) {
         try {
           await queryFulfilled;
-          await dispatch(userApi.endpoints.getMe.initiate(null));
+          // After logout, you might want to clear user state instead of calling getMe
+          dispatch(clearUser());
+          dispatch(setIsAuthenticated(false));
         } catch (error) {
           console.log(error);
         }
