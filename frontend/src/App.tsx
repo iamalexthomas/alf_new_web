@@ -22,6 +22,7 @@ import RoutesScrollToTop from './components/utilities/RoutesScrollToTop';
 import { ToastContainer } from 'react-toastify';
 import Dependency from './components/utilities/Dependency';
 import Preloader from './components/utilities/Preloader';
+import AuthInit from './components/auth/AuthInit';
 import { useEffect, useState } from 'react';
 import ReduxWrapper from './components/utilities/ReduxWrapper';
 
@@ -38,9 +39,9 @@ function App() {
 
   return (
     <>
-      {isLoading ? <Preloader /> :
-        <>
+      {isLoading ? <Preloader /> :        <>
           <ReduxWrapper>
+            <AuthInit />
             <Routers />
             <RoutesScrollToTop />
             <ToastContainer />

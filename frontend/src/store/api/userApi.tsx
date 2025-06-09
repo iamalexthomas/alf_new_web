@@ -38,39 +38,25 @@ export const userApi = createApi({
   tagTypes: ["User", "AdminUsers", "AdminUser"],
   endpoints: (builder) => ({
     getMe: builder.query<User, void>({
-      query: () => "getMe",
-      transformResponse: (response: UserResponse) => {
+      query: () => "getMe",      transformResponse: (response: UserResponse) => {
         if (response.success) {
           const user = response.user || response.data;
           if (user) {
             return {
-              id: user.id,
+              id: user.id || user._id, // Handle both id and _id
               name: user.name,
               email: user.email,
             };
           }
         }
         throw new Error(response.error || "Failed to fetch user data");
-      },
-      async onQueryStarted(args, { dispatch, queryFulfilled }) {
-        dispatch(setLoading(true));
+      },      async onQueryStarted(args, { dispatch, queryFulfilled }) {
         try {
-          const { data } = await queryFulfilled;
-          dispatch(setUser({
-            id: data.id, // Use id, not _id
-            name: data.name || "",
-            email: data.email || "", // Use email
-            token: undefined, // Token is managed separately
-          }));
-          dispatch(setIsAuthenticated(true));
+          // Let AuthInit handle the state updates
+          await queryFulfilled;
         } catch (error: any) {
           console.error("getMe error:", error);
-          if (error.status === 401 || error.status === 403) {
-            dispatch(clearUser());
-            dispatch(setIsAuthenticated(false));
-          }
-        } finally {
-          dispatch(setLoading(false));
+          // Let AuthInit handle error cases too
         }
       },
       providesTags: ["User"],

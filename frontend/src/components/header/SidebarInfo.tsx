@@ -68,7 +68,6 @@ const SidebarInfo: React.FC<HeaderSearchProps> = ({ closeInfoBar, isInfoOpen, to
   const LoginModal = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-
   const handleSubmit = async (e: React.FormEvent) => {
   e.preventDefault();
   
@@ -77,10 +76,11 @@ const SidebarInfo: React.FC<HeaderSearchProps> = ({ closeInfoBar, isInfoOpen, to
     
     // Handle current backend response structure
     if (response.token) {
+      const user = response.user || response; // Handle both nested and flat user data
       dispatch(setUser({
-        id: response._id,  // Using _id from root
-        name: response.name,
-        email: response.email,
+        id: user.id || user._id,  // Handle both id and _id
+        name: user.name || response.name,
+        email: user.email || response.email,
         token: response.token
       }));
       
@@ -203,21 +203,22 @@ const SidebarInfo: React.FC<HeaderSearchProps> = ({ closeInfoBar, isInfoOpen, to
       if (formData.password !== formData.confirmPassword) {
         toast.error("Passwords don't match");
         return;
-      }
-
-      try {
-        const  response = await register({
+      }      try {
+        const response = await register({
           name: formData.name,
           email: formData.email,
           password: formData.password,
         }).unwrap();
+        
+        const user = response.user || response; // Handle both nested and flat user data
         dispatch(setUser({
-        // id: response._id,  // Using _id from root
-        name: response.name,
-        email: response.email,
-       password:response.password,
-        token: response.token
-      }));
+          id: user.id || user._id, // Handle both id and _id
+          name: user.name || response.name,
+          email: user.email || response.email,
+          token: response.token
+        }));
+        
+        dispatch(setIsAuthenticated(true));
       
         toast.success("Registration successful!");
         setShowRegisterModal(false);

@@ -22,16 +22,15 @@ const LoginContent = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     const { email, password } = formData;
-    setIsLoading(true);
-
-    try {
+    setIsLoading(true);    try {
       const response = await login({ email, password }).unwrap();
 
       if (response.success) {
+        const user = response.user || response; // Handle both nested and flat user data
         dispatch(setUser({
-          _id: response.user.id,
-          name: response.user.name || "",
-          email: response.user.email || "",
+          id: user.id || user._id, // Handle both id and _id  
+          name: user.name || "",
+          email: user.email || "",
           token: response.token || "",
         }));
         dispatch(setIsAuthenticated(true));
